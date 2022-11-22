@@ -11,9 +11,17 @@
     <Window.Resources>
         <ResourceDictionary>
             <DataTemplate x:Key="SongInfoItemTemplate">
-                <StackPanel Orientation="Horizontal" Height="40">
-                    <TextBlock Text="{Binding SongName}" FontSize="20"/>
-                </StackPanel>
+                <Grid Height="40">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="110"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="{Binding SongName}" FontSize="14"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Width="110" FlowDirection="RightToLeft">
+                        <Button Width="50" Height="30" Content="下载" FontSize="14" Margin="0 0  4 0" Cursor="Hand"/>
+                        <Button Width="50" Height="30" Content="试听" FontSize="14" Cursor="Hand"/>
+                    </StackPanel>
+                </Grid>
             </DataTemplate>
         </ResourceDictionary>
     </Window.Resources>
@@ -32,7 +40,7 @@
             <Button Grid.Column="1" Content="搜索" Width="60" Height="30" Click="ButtonBase_OnClick" Cursor="Hand"/>
         </Grid>
         <virtualizingWrapPanel:VirtualizingItemsControl  Grid.Row="1" Background="Transparent"
-                                         Margin="10 0 10 10"
+                                         Margin="10 0 0 10"
                                          ItemsSource="{Binding SongItemsInfo}"
                                          ItemTemplate="{StaticResource SongInfoItemTemplate}"
                                          VirtualizingPanel.CacheLengthUnit="{Binding CacheUnit, Mode=OneWay}"
