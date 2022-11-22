@@ -8,18 +8,32 @@
         Title="MainWindow" Height="450" Width="800">
 
     <Grid>
-        <StackPanel Background="AntiqueWhite">
-            <Grid Margin="10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="70"/>
-                </Grid.ColumnDefinitions>
-                <TextBox x:Name="UrlTextBox" FontSize="20" Height="30" Margin="0 0 10 0"/>
-                <Button Grid.Column="1" Content="搜索" Width="60" Height="30" Click="ButtonBase_OnClick"/>
-            </Grid>
-            
-        </StackPanel>
-       
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="70"/>
+            </Grid.ColumnDefinitions>
+            <TextBox x:Name="UrlTextBox" FontSize="20" Height="30" Margin="0 0 10 0"/>
+            <Button Grid.Column="1" Content="搜索" Width="60" Height="30" Click="ButtonBase_OnClick" Cursor="Hand"/>
+        </Grid>
+        <ItemsControl Grid.Row="1" ItemsSource="{Binding SongItemsInfo}" Margin="10 0 10 10">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Vertical"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                   <StackPanel Orientation="Horizontal" Height="40">
+                        <TextBlock Text="{Binding SongName}" FontSize="20"/>
+                   </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
     </Grid>
     
 </Window>

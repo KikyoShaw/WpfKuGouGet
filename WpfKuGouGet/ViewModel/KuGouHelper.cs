@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,11 +10,59 @@ using Furion;
 using Furion.ClayObject;
 using Furion.DataEncryption;
 using Furion.RemoteRequest.Extensions;
+using GalaSoft.MvvmLight;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace WpfKuGouGet.ViewModel
 {
-    public class KuGouHelper
+    /// <summary>
+    /// 歌曲信息
+    /// </summary>
+    public class SongInfo : ViewModelBase
+    {
+        private string _songName = "";
+
+        public string SongName
+        {
+            get => _songName;
+            set => Set("SongName", ref _songName, value);
+        }
+
+        private string _songAuthor = "";
+
+        public string SongAuthor
+        {
+            get => _songAuthor;
+            set => Set("SongAuthor", ref _songAuthor, value);
+        }
+
+        private string _songAlbumId = "";
+        public string SongAlbumId
+        {
+            get => _songAlbumId;
+            set => Set("SongAlbumId", ref _songAlbumId, value);
+        }
+
+        private string _songFileHash = "";
+        public string SongFileHash
+        {
+            get => _songFileHash;
+            set => Set("SongFileHash", ref _songFileHash, value);
+        }
+
+        private string _songUrl = "";
+
+        public string SongUrl
+        {
+            get => _songUrl;
+            set => Set("SongUrl", ref _songUrl, value);
+        }
+    }
+
+    /// <summary>
+    /// 酷狗工具类
+    /// </summary>
+    public class KuGouHelper : ViewModelBase
     {
         private static readonly Lazy<KuGouHelper>
            Lazy = new Lazy<KuGouHelper>(() => new KuGouHelper());
@@ -26,9 +77,17 @@ namespace WpfKuGouGet.ViewModel
             services.Build();
         }
 
-        private Dictionary<string, object> _headers = new Dictionary<string, object> {
+        private readonly Dictionary<string, object> _headers = new Dictionary<string, object> {
                 { "User-Agent", "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36" }
         };
+
+        //搜索歌曲信息容器
+        private ObservableCollection<SongInfo> _songItemsInfo = new ObservableCollection<SongInfo>();
+        public ObservableCollection<SongInfo> SongItemsInfo
+        {
+            get => _songItemsInfo;
+            set => Set("SongItemsInfo", ref _songItemsInfo, value);
+        }
 
         /// <summary>
         /// 搜索功能
@@ -36,12 +95,13 @@ namespace WpfKuGouGet.ViewModel
         /// <param name="searchKeyWord">搜索关键词</param>
         /// <param name="pageIndex">分页</param>
         /// <returns></returns>
-        public async Task<List<dynamic>> Search(string searchKeyWord, int pageIndex)
+        public async Task<bool> Search(string searchKeyWord, int pageIndex)
         {
-            List<dynamic> singerlist = new List<dynamic>();
+            bool ok = false;
+            var tempSongItemsInfo = new ObservableCollection<SongInfo>();
             try
             {
-                string t = (DateTime.Now - new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalSeconds.ToString();
+                string t = (DateTime.Now - new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalSeconds.ToString(CultureInfo.InvariantCulture);
 
                 string[] sign_params = {"NVPh5oo715z5DIWAeQlhMDsWXXQV4hwt", "bitrate=0", "callback=callback123",
                        "clienttime=" + t, "clientver=2000", "dfid=-", "inputtype=0", "iscorrection=1",
@@ -49,8 +109,8 @@ namespace WpfKuGouGet.ViewModel
                        "keyword=" + searchKeyWord, "mid=" + t, "page=" + pageIndex, "pagesize=20",
                        "platform=WebFilter", "privilege_filter=0", "srcappid=2919", "token=", "userid=0",
                        "uuid=" + t, "NVPh5oo715z5DIWAeQlhMDsWXXQV4hwt" };
-                var sign_paramStr = string.Join("", sign_params);
-                var signature = MD5Encryption.Encrypt(sign_paramStr);
+                var signParamStr = string.Join("", sign_params);
+                var signature = MD5Encryption.Encrypt(signParamStr);
 
                 var response = await "https://complexsearch.kugou.com/v2/search/song"
                     .SetHeaders(_headers)
@@ -79,21 +139,72 @@ namespace WpfKuGouGet.ViewModel
                 //返回值为JsonpCallback
                 var responseJson = response.Replace("callback123(", "").TrimEnd().TrimEnd(')');
 
+                if (string.IsNullOrEmpty(responseJson))
+                    return ok;
+
                 var clay = Clay.Parse(responseJson);
                 int index = 0;
                 foreach (var item in clay.data.lists)
                 {
                     index++;
-                    singerlist.Add(item);
-                    Console.WriteLine($"{index.ToString().PadLeft(2, '0')}  {item.FileName}");
+                    var tempSongInfo = new SongInfo
+                    {
+                        SongAuthor = item.SingerName,
+                        SongName = item.FileName,
+                        SongFileHash = item.FileHash,
+                        SongAlbumId = item.AlbumID
+                    };
+                    tempSongItemsInfo.Add(tempSongInfo);
                 }
+
+                ok = index > 0;
             }
             catch /*(Exception e)*/
             {
                 //Console.WriteLine(e);
                 //throw;
             }
-            return singerlist;
+
+            SongItemsInfo = tempSongItemsInfo;
+            return ok;
+        }
+
+        /// <summary>
+        /// 下载功能
+        /// </summary>
+        /// <param name="songInfo">下载歌曲信息</param>
+        public async void Download(dynamic songInfo)
+        {
+            //获取文件下载路径
+            var respondFileInfo = await "https://wwwapi.kugou.com/yy/index.php"
+                .SetHeaders(_headers)
+                .SetQueries(new Dictionary<string, object>
+                {
+                    {"r", "play/getdata" },
+                    {"callback", "jQuery191035601158181920933_1653052693184" },
+                    {"hash", songInfo.FileHash },
+                    {"dfid", "2mSZvv2GejpK2VDsgh0K7U0O" },
+                    {"appid", "1014" },
+                    {"mid", "c18aeb062e34929c6e90e3af8f7e2512" },
+                    {"platid", "4" },
+                    {"album_id", songInfo.AlbumID },
+                    {"_", "1653050047389" }
+                }).GetAsStringAsync();
+
+            var respondFileInfoJson = respondFileInfo.Substring(42).TrimEnd().TrimEnd(';').TrimEnd(')');
+            var clay = Clay.Parse(respondFileInfoJson);
+            string fileUrl = clay.data.play_url;
+
+            //下载文件
+            var bytes = await fileUrl.SetHeaders(_headers).GetAsByteArrayAsync();
+
+            if (!Directory.Exists("./music"))
+            {
+                Directory.CreateDirectory("./music");
+            }
+
+            await using FileStream fs = new FileStream($"./music/{clay.data.audio_name}.mp3", FileMode.Create, FileAccess.Write);
+            fs.Write(bytes, 0, bytes.Length);
         }
     }
 }

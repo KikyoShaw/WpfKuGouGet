@@ -24,20 +24,20 @@ namespace WpfKuGouGet
         public MainWindow()
         {
             InitializeComponent();
+            this.DataContext = KuGouHelper.Instance;
         }
 
         private async void ButtonBase_OnClickAsync()
         {
             try
             {
-                if (KuGouHelper.Instance == null)
-                    return;
-
                 var text = this.UrlTextBox.Text;
                 if (string.IsNullOrEmpty(text))
                     return;
 
-                var list = await KuGouHelper.Instance.Search(text, 1);
+                var ok = await KuGouHelper.Instance.Search(text, 1);
+                if(!ok)
+                    Console.WriteLine("搜索失败！");
             }
             catch /*(Exception e)*/
             {
