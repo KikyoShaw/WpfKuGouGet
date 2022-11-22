@@ -84,6 +84,15 @@ namespace WpfKuGouGet.ViewModel
         //搜索个数
         public int SearchNum = 50;
 
+        //缓存目录
+        private string _pathCache = @"D:/kgMusic/";
+
+        public string PathCache
+        {
+            get => _pathCache;
+            set => Set("PathCache", ref _pathCache, value);
+        }
+
         //搜索歌曲信息容器
         private ObservableCollection<SongInfo> _songItemsInfo = new ObservableCollection<SongInfo>();
         public ObservableCollection<SongInfo> SongItemsInfo
@@ -173,10 +182,11 @@ namespace WpfKuGouGet.ViewModel
         }
 
         /// <summary>
-        /// 下载功能
+        /// 下载接口
         /// </summary>
-        /// <param name="songInfo">下载歌曲信息</param>
-        public async void Download(dynamic songInfo)
+        /// <param name="fileHash"></param>
+        /// <param name="albumId"></param>
+        public async void Download(string fileHash, string albumId)
         {
             //获取文件下载路径
             var respondFileInfo = await "https://wwwapi.kugou.com/yy/index.php"
@@ -185,12 +195,12 @@ namespace WpfKuGouGet.ViewModel
                 {
                     {"r", "play/getdata" },
                     {"callback", "jQuery191035601158181920933_1653052693184" },
-                    {"hash", songInfo.FileHash },
+                    {"hash", fileHash },
                     {"dfid", "2mSZvv2GejpK2VDsgh0K7U0O" },
                     {"appid", "1014" },
                     {"mid", "c18aeb062e34929c6e90e3af8f7e2512" },
                     {"platid", "4" },
-                    {"album_id", songInfo.AlbumID },
+                    {"album_id", albumId },
                     {"_", "1653050047389" }
                 }).GetAsStringAsync();
 
@@ -201,12 +211,12 @@ namespace WpfKuGouGet.ViewModel
             //下载文件
             var bytes = await fileUrl.SetHeaders(_headers).GetAsByteArrayAsync();
 
-            if (!Directory.Exists("./music"))
+            if (!Directory.Exists(PathCache))
             {
-                Directory.CreateDirectory("./music");
+                Directory.CreateDirectory(PathCache);
             }
 
-            await using FileStream fs = new FileStream($"./music/{clay.data.audio_name}.mp3", FileMode.Create, FileAccess.Write);
+            await using FileStream fs = new FileStream($"{PathCache}{clay.data.audio_name}.mp3", FileMode.Create, FileAccess.Write);
             fs.Write(bytes, 0, bytes.Length);
         }
     }

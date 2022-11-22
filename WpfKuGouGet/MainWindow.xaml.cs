@@ -8,12 +8,14 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WpfKuGouGet.ViewModel;
+using Button = System.Windows.Controls.Button;
 
 namespace WpfKuGouGet
 {
@@ -63,6 +65,53 @@ namespace WpfKuGouGet
         private void TextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             e.Handled = new Regex("[^0-9]+").IsMatch(e.Text);
+        }
+
+        private void PathCacheButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                FolderBrowserDialog dialog = new FolderBrowserDialog();
+                dialog.Description = "请选择文件夹";
+                if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    if (string.IsNullOrEmpty(dialog.SelectedPath))
+                    {
+                        System.Windows.MessageBox.Show(this, "文件夹路径不能为空", "提示");
+                        return;
+                    }
+                    KuGouHelper.Instance.PathCache = dialog.SelectedPath;
+                }
+            }
+            catch /*(Exception exception)*/
+            {
+                //Console.WriteLine(exception);
+                //throw;
+            }
+        }
+
+        private void DownLoadButton_clicked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Button? dowButton = sender as Button;
+
+                if(dowButton == null)
+                    return;
+
+                SongInfo? item = dowButton.Tag as SongInfo;
+
+                if(item == null)
+                    return;
+
+                KuGouHelper.Instance.Download(item.SongFileHash, item.SongAlbumId);
+
+            }
+            catch /*(Exception exception)*/
+            {
+                //Console.WriteLine(exception);
+                //throw;
+            }
         }
     }
 }

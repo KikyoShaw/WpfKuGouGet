@@ -19,7 +19,8 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Column="0" Text="{Binding SongName}" FontSize="14"/>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" Width="110" FlowDirection="RightToLeft">
-                        <Button Width="50" Height="30" Content="下载" FontSize="14" Margin="0 0  4 0" Cursor="Hand"/>
+                        <Button Width="50" Height="30" Content="下载" FontSize="14" Margin="0 0  4 0" Tag="{Binding}"
+                                Cursor="Hand" Click="DownLoadButton_clicked"/>
                         <Button Width="50" Height="30" Content="试听" FontSize="14" Cursor="Hand"/>
                     </StackPanel>
                 </Grid>
@@ -41,7 +42,6 @@
                     </Trigger>
                 </Style.Triggers>
             </Style>
-
             <Style x:Key="TextBoxStyle2" TargetType="TextBox">
                 <Style.Resources>
                     <VisualBrush x:Key="HintText" TileMode="None" Opacity="0.5" Stretch="None" AlignmentX="Left">
@@ -86,12 +86,12 @@
                 <ColumnDefinition Width="70"/>
                 <ColumnDefinition Width="70"/>
             </Grid.ColumnDefinitions>
-            <TextBox x:Name="PathTextBox" FontSize="14" Height="30" Margin="0 0 10 0" VerticalContentAlignment="Center" IsEnabled="False"/>
-            <Button Grid.Column="1" Content="更改目录" FontSize="14" Width="64" Height="30" Click="ButtonBase_OnClick" Cursor="Hand"/>
+            <TextBox x:Name="PathTextBox" Text="{Binding PathCache}" FontSize="14" Height="30" Margin="0 0 10 0" VerticalContentAlignment="Center" IsEnabled="False"/>
+            <Button Grid.Column="1" Content="更改目录" FontSize="14" Width="64" Height="30" Click="PathCacheButton_OnClick" Cursor="Hand"/>
             <Button Grid.Column="2" Content="全部下载" FontSize="14" Width="64" Height="30" Click="ButtonBase_OnClick" Cursor="Hand"/>
         </Grid>
         <virtualizingWrapPanel:VirtualizingItemsControl Grid.Row="2" Background="Transparent"
-                                                         Margin="10 0 0 10"
+                                                         Margin="10 0 12 10"
                                                          ItemsSource="{Binding SongItemsInfo}"
                                                          ItemTemplate="{StaticResource SongInfoItemTemplate}"
                                                          VirtualizingPanel.CacheLengthUnit="{Binding CacheUnit, Mode=OneWay}"
