@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,6 +26,8 @@ namespace WpfKuGouGet
         {
             InitializeComponent();
             this.DataContext = KuGouHelper.Instance;
+
+            this.NumTextBox.Text = KuGouHelper.Instance.SearchNum.ToString();
         }
 
         private async void ButtonBase_OnClickAsync()
@@ -34,6 +37,12 @@ namespace WpfKuGouGet
                 var text = this.UrlTextBox.Text;
                 if (string.IsNullOrEmpty(text))
                     return;
+
+                var numText = this.NumTextBox.Text;
+                int num = 50;
+                if(!string.IsNullOrEmpty(numText))
+                    int.TryParse(numText, out num);
+                KuGouHelper.Instance.SearchNum = num;
 
                 var ok = await KuGouHelper.Instance.Search(text, 1);
                 if(!ok)
@@ -49,6 +58,11 @@ namespace WpfKuGouGet
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
             ButtonBase_OnClickAsync();
+        }
+
+        private void TextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = new Regex("[^0-9]+").IsMatch(e.Text);
         }
     }
 }

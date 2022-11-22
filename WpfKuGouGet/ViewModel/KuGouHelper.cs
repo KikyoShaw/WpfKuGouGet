@@ -81,6 +81,9 @@ namespace WpfKuGouGet.ViewModel
                 { "User-Agent", "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36" }
         };
 
+        //搜索个数
+        public int SearchNum = 50;
+
         //搜索歌曲信息容器
         private ObservableCollection<SongInfo> _songItemsInfo = new ObservableCollection<SongInfo>();
         public ObservableCollection<SongInfo> SongItemsInfo
@@ -106,7 +109,7 @@ namespace WpfKuGouGet.ViewModel
                 string[] sign_params = {"NVPh5oo715z5DIWAeQlhMDsWXXQV4hwt", "bitrate=0", "callback=callback123",
                        "clienttime=" + t, "clientver=2000", "dfid=-", "inputtype=0", "iscorrection=1",
                        "isfuzzy=0",
-                       "keyword=" + searchKeyWord, "mid=" + t, "page=" + pageIndex, "pagesize=20",
+                       "keyword=" + searchKeyWord, "mid=" + t, "page=" + pageIndex, "pagesize=" + SearchNum,
                        "platform=WebFilter", "privilege_filter=0", "srcappid=2919", "token=", "userid=0",
                        "uuid=" + t, "NVPh5oo715z5DIWAeQlhMDsWXXQV4hwt" };
                 var signParamStr = string.Join("", sign_params);
@@ -118,7 +121,7 @@ namespace WpfKuGouGet.ViewModel
                 {"callback","callback123"},
                 {"page",pageIndex},
                 {"keyword",searchKeyWord??""},
-                {"pagesize","20"},
+                {"pagesize", SearchNum},
                 {"bitrate","0"},
                 {"isfuzzy","0"},
                 {"inputtype","0"},
