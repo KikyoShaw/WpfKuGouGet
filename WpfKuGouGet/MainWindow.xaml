@@ -7,21 +7,24 @@
         xmlns:virtualizingWrapPanel="clr-namespace:WpfKuGouGet.VirtualizingWrapPanel"
         xmlns:ui="clr-namespace:WpfKuGouGet.UI"
         mc:Ignorable="d"
-        Title="MainWindow" Height="750" Width="800">
+        Title="KuGouDownLoader" Height="750" Width="800">
 
     <Window.Resources>
         <ResourceDictionary>
             <DataTemplate x:Key="SongInfoItemTemplate">
-                <Grid Height="40">
+                <Grid Height="40" Margin="0 0 0 10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="110"/>
+                        <ColumnDefinition Width="410"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Column="0" Text="{Binding SongName}" FontSize="14"/>
-                    <StackPanel Grid.Column="1" Orientation="Horizontal" Width="110" FlowDirection="RightToLeft">
-                        <Button Width="50" Height="30" Content="下载" FontSize="14" Margin="0 0  4 0" Tag="{Binding}"
-                                Cursor="Hand" Click="DownLoadButton_clicked"/>
-                        <Button Width="50" Height="30" Content="试听" FontSize="14" Cursor="Hand"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <TextBlock Text="{Binding SongAlbumName}" FontSize="14" Width="300"/>
+                        <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" Width="110" Margin="0 0 0 10">
+                            <Button Width="50" Height="30" Content="下载" FontSize="14" Margin="0 0  4 0" Tag="{Binding}"
+                                    Cursor="Hand" Click="DownLoadButton_clicked"/>
+                            <Button Width="50" Height="30" Content="试听" FontSize="14" Cursor="Hand"/>
+                        </StackPanel>
                     </StackPanel>
                 </Grid>
             </DataTemplate>

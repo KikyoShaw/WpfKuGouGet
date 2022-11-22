@@ -51,6 +51,14 @@ namespace WpfKuGouGet.ViewModel
             set => Set("SongFileHash", ref _songFileHash, value);
         }
 
+        private string _songAlbumName = "";
+
+        public string SongAlbumName
+        {
+            get => _songAlbumName;
+            set => Set("SongAlbumName", ref _songAlbumName, value);
+        }
+
         private string _songUrl = "";
 
         public string SongUrl
@@ -167,7 +175,8 @@ namespace WpfKuGouGet.ViewModel
                         SongAuthor = item.SingerName,
                         SongName = item.FileName,
                         SongFileHash = item.FileHash,
-                        SongAlbumId = item.AlbumID
+                        SongAlbumId = item.AlbumID,
+                        SongAlbumName = item.AlbumName,
                     };
                     tempSongItemsInfo.Add(tempSongInfo);
                     _songList.Add(item);
