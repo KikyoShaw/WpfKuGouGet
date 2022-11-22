@@ -62,7 +62,7 @@ namespace WpfKuGouGet.ViewModel
     /// <summary>
     /// 酷狗工具类
     /// </summary>
-    public class KuGouHelper : ViewModelBase
+    public partial class KuGouHelper : ViewModelBase
     {
         private static readonly Lazy<KuGouHelper>
            Lazy = new Lazy<KuGouHelper>(() => new KuGouHelper());
