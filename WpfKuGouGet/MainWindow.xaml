@@ -88,7 +88,7 @@
             </Grid.ColumnDefinitions>
             <TextBox x:Name="PathTextBox" Text="{Binding PathCache}" FontSize="14" Height="30" Margin="0 0 10 0" VerticalContentAlignment="Center" IsEnabled="False"/>
             <Button Grid.Column="1" Content="更改目录" FontSize="14" Width="64" Height="30" Click="PathCacheButton_OnClick" Cursor="Hand"/>
-            <Button Grid.Column="2" Content="全部下载" FontSize="14" Width="64" Height="30" Click="ButtonBase_OnClick" Cursor="Hand"/>
+            <Button Grid.Column="2" Content="全部下载" FontSize="14" Width="64" Height="30" Click="DownLoadAllButton_OnClick" Cursor="Hand"/>
         </Grid>
         <virtualizingWrapPanel:VirtualizingItemsControl Grid.Row="2" Background="Transparent"
                                                          Margin="10 0 12 10"

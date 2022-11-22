@@ -113,5 +113,10 @@ namespace WpfKuGouGet
                 //throw;
             }
         }
+
+        private void DownLoadAllButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            KuGouHelper.Instance.DownloadAll();
+        }
     }
 }

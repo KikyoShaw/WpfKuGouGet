@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Furion;
 using Furion.ClayObject;
@@ -93,6 +94,8 @@ namespace WpfKuGouGet.ViewModel
             set => Set("PathCache", ref _pathCache, value);
         }
 
+        private List<dynamic> _songList = new List<dynamic>();
+
         //搜索歌曲信息容器
         private ObservableCollection<SongInfo> _songItemsInfo = new ObservableCollection<SongInfo>();
         public ObservableCollection<SongInfo> SongItemsInfo
@@ -167,6 +170,7 @@ namespace WpfKuGouGet.ViewModel
                         SongAlbumId = item.AlbumID
                     };
                     tempSongItemsInfo.Add(tempSongInfo);
+                    _songList.Add(item);
                 }
 
                 ok = index > 0;
@@ -218,6 +222,22 @@ namespace WpfKuGouGet.ViewModel
 
             await using FileStream fs = new FileStream($"{PathCache}{clay.data.audio_name}.mp3", FileMode.Create, FileAccess.Write);
             fs.Write(bytes, 0, bytes.Length);
+        }
+
+        /// <summary>
+        /// 全部下载
+        /// </summary>
+        /// <param name="list">列表信息</param>
+        public void DownloadAll()
+        {
+            if(_songList.Count <= 0)
+                return;
+
+            _songList.ForEach(s =>
+            {
+                Download(s.FileHash, s.AlbumID);
+                Thread.Sleep(233);
+            });
         }
     }
 }
